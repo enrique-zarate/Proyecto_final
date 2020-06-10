@@ -4,10 +4,7 @@
  * and open the template in the editor.
  */
 package test;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import modelo.*;
 
 /**
@@ -15,7 +12,10 @@ import modelo.*;
  * @author Mathias Ciancio - CO6607
  */
 public class Sistema extends javax.swing.JFrame {
-    
+    private static ManteEvento frameManteEvento;
+    private static ManteCiudad frameManteCiudad;
+    private static MantePonencia frameMantePonencia;
+    private static ManteEventoPonencia frameManteEvtPon;
     /**
      * Creates new form Sistema
      */
@@ -23,6 +23,10 @@ public class Sistema extends javax.swing.JFrame {
         initComponents();
         setResizable(false);
         setLocationRelativeTo(null);
+        frameManteEvento = new ManteEvento();
+        frameManteCiudad = new ManteCiudad();
+        frameMantePonencia = new MantePonencia();
+        frameManteEvtPon = new ManteEventoPonencia();
     }
 
     /**
@@ -42,7 +46,10 @@ public class Sistema extends javax.swing.JFrame {
         mnuMEvento = new javax.swing.JMenu();
         mniEACiudad = new javax.swing.JMenuItem();
         mniEAEvento = new javax.swing.JMenuItem();
-        jMenuItem1 = new javax.swing.JMenuItem();
+        jMenu1 = new javax.swing.JMenu();
+        mniPAPonencia = new javax.swing.JMenuItem();
+        jSeparator1 = new javax.swing.JPopupMenu.Separator();
+        mnuManteEvtPon = new javax.swing.JMenuItem();
         mnuConsulta = new javax.swing.JMenu();
         mniCEvento = new javax.swing.JMenuItem();
 
@@ -65,6 +72,11 @@ public class Sistema extends javax.swing.JFrame {
 
         mniSalir.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.ALT_MASK));
         mniSalir.setText("Salir");
+        mniSalir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mniSalirActionPerformed(evt);
+            }
+        });
         mnuArchivo.add(mniSalir);
 
         mnubarMenu.add(mnuArchivo);
@@ -91,13 +103,26 @@ public class Sistema extends javax.swing.JFrame {
 
         mnuMantenimiento.add(mnuMEvento);
 
-        jMenuItem1.setText("Ponencia");
-        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+        jMenu1.setText("Ponencia");
+
+        mniPAPonencia.setText("Cargar Ponencia");
+        mniPAPonencia.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem1ActionPerformed(evt);
+                mniPAPonenciaActionPerformed(evt);
             }
         });
-        mnuMantenimiento.add(jMenuItem1);
+        jMenu1.add(mniPAPonencia);
+
+        mnuMantenimiento.add(jMenu1);
+        mnuMantenimiento.add(jSeparator1);
+
+        mnuManteEvtPon.setText("Asignar Ponencias a Eventos");
+        mnuManteEvtPon.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuManteEvtPonActionPerformed(evt);
+            }
+        });
+        mnuMantenimiento.add(mnuManteEvtPon);
 
         mnubarMenu.add(mnuMantenimiento);
 
@@ -124,22 +149,42 @@ public class Sistema extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+
+    
     private void mniEAEventoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniEAEventoActionPerformed
-        ManteEvento mostrarVentana = new ManteEvento();
-        escritorio.add(mostrarVentana);
-        mostrarVentana.setVisible(true);
+        if(!frameManteEvento.isVisible()){
+            escritorio.add(frameManteEvento);
+            frameManteEvento.setVisible(true);
+        }
     }//GEN-LAST:event_mniEAEventoActionPerformed
 
-    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
-        // TODO add your handling code here:
-        MantePonencia mostrarVentana = new MantePonencia();
-        escritorio.add(mostrarVentana);
-        mostrarVentana.setVisible(true);
-    }//GEN-LAST:event_jMenuItem1ActionPerformed
-
     private void mniEACiudadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniEACiudadActionPerformed
-        // TODO add your handling code here:
+        if(!frameManteCiudad.isVisible()){
+            escritorio.add(frameManteCiudad);
+            frameManteCiudad.setVisible(true);
+        }
     }//GEN-LAST:event_mniEACiudadActionPerformed
+
+    private void mniSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniSalirActionPerformed
+        int salir = JOptionPane.showConfirmDialog(null, "¿Desea salir de la aplicacion?", "Confirmar salida", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+            if (salir == 0){
+                System.exit(0);
+            }
+    }//GEN-LAST:event_mniSalirActionPerformed
+
+    private void mniPAPonenciaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniPAPonenciaActionPerformed
+        if(!frameMantePonencia.isVisible()){
+            escritorio.add(frameMantePonencia);
+            frameMantePonencia.setVisible(true);
+        }
+    }//GEN-LAST:event_mniPAPonenciaActionPerformed
+
+    private void mnuManteEvtPonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuManteEvtPonActionPerformed
+        if(!frameManteEvtPon.isVisible()){
+            escritorio.add(frameManteEvtPon);
+            frameManteEvtPon.setVisible(true);
+        }
+    }//GEN-LAST:event_mnuManteEvtPonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -178,14 +223,17 @@ public class Sistema extends javax.swing.JFrame {
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JDesktopPane escritorio;
-    private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenu jMenu1;
+    private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JMenuItem mniCEvento;
     private javax.swing.JMenuItem mniEACiudad;
     private javax.swing.JMenuItem mniEAEvento;
+    private javax.swing.JMenuItem mniPAPonencia;
     private javax.swing.JMenuItem mniSalir;
     private javax.swing.JMenu mnuArchivo;
     private javax.swing.JMenu mnuConsulta;
     private javax.swing.JMenu mnuMEvento;
+    private javax.swing.JMenuItem mnuManteEvtPon;
     private javax.swing.JMenu mnuMantenimiento;
     private javax.swing.JMenuBar mnubarMenu;
     // End of variables declaration//GEN-END:variables

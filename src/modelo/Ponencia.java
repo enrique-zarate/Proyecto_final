@@ -1,11 +1,13 @@
 
 package modelo;
 
+import java.util.Comparator;
+
 /**
  *
  * @author Enri - Co6590
  */
-public class Ponencia {
+public class Ponencia implements Comparable<Ponencia> {
     private int codigo_ponencia;
     private String titulo_ponencia;
     private String fechaRealizacion;
@@ -17,21 +19,21 @@ public class Ponencia {
     /**
      * Constructor
      */
-    public Ponencia (int cod, String titulo_p, String fechaR, String nombreInvest, String desc, String m) {
+    public Ponencia(int cod, String titulo_p, String fechaR, String nombreInvest, String desc, String m) {
         codigo_ponencia = cod;
         titulo_ponencia = titulo_p;
         fechaRealizacion = fechaR;
         nombreInvestigador = nombreInvest;
         descripcion = desc;
         medio = m;
-        estado = "N";
+        estado = "N"; //No esta asignado a ningun evento
     }
     public Ponencia (int cod, String titulo, String fechaR){
         codigo_ponencia = cod;
         titulo_ponencia = titulo;
         fechaRealizacion = fechaR;
     }
-    
+   
     
     /**
      * Getters y setters
@@ -73,6 +75,7 @@ public class Ponencia {
     /**
      * toString
      */
+    @Override
     public String toString(){
         StringBuilder str = new StringBuilder("\nDatos de la Ponencia:");
         str.append("\nID: ").append(codigo_ponencia);
@@ -85,5 +88,12 @@ public class Ponencia {
         return str.toString();
     }
     
+    @Override
+    public int compareTo(Ponencia p){
+        return Comparator.comparingInt(Ponencia::getCodigo_ponencia)
+                .thenComparing(Ponencia::getFechaRealizacion)
+                .thenComparing(Ponencia::getTituloPonecia)
+                .compare(this,p);
+    }
     
 }

@@ -21,7 +21,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import javax.swing.JOptionPane;
-import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import modelo.*;
 
@@ -30,10 +29,12 @@ import modelo.*;
  * @author Mathias Ciancio - CO6607
  */
 public class ManteEvento extends javax.swing.JInternalFrame implements Serializable {
-    
     private ArrayList<Evento> listaEventos = new ArrayList<>();
+    private ArrayList<Ciudad> listaCiudades = new ArrayList<>();
     private static int ultimoCodigo;
     public static final File ORIGINAL = new File("Evento.csv");
+    public static final File CIUDADES = new File("Ciudades.csv");
+    
 
     
     /**
@@ -41,8 +42,10 @@ public class ManteEvento extends javax.swing.JInternalFrame implements Serializa
      */
     public ManteEvento(){
         listaEventos = leerDocEventos(ORIGINAL);
+        listaCiudades = leerDocCiudades(CIUDADES);
         initComponents();
         mostrarDatosEnTabla();
+        cargarComboCiudades();
     }
 
     /**
@@ -62,7 +65,6 @@ public class ManteEvento extends javax.swing.JInternalFrame implements Serializa
         txtNombreEvento = new javax.swing.JTextField();
         ddtFecDesde = new com.toedter.calendar.JDateChooser();
         ddtFecHasta = new com.toedter.calendar.JDateChooser();
-        btnAddCiudad = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         tablaEvento = new javax.swing.JTable();
         btnGrabar = new javax.swing.JButton();
@@ -85,17 +87,17 @@ public class ManteEvento extends javax.swing.JInternalFrame implements Serializa
         lblHasta.setText("Hasta:");
 
         cbCiudad.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        cbCiudad.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Asunción", "Ciudad Del Este", "Luque" }));
+        cbCiudad.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                cbCiudadMouseClicked(evt);
+            }
+        });
 
         txtNombreEvento.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
         ddtFecDesde.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
         ddtFecHasta.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-
-        btnAddCiudad.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/ManteCiudad.png"))); // NOI18N
-        btnAddCiudad.setToolTipText("Agregar Ciudad");
-        btnAddCiudad.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
         tablaEvento.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         tablaEvento.setModel(new javax.swing.table.DefaultTableModel(
@@ -135,7 +137,6 @@ public class ManteEvento extends javax.swing.JInternalFrame implements Serializa
         }
 
         btnGrabar.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        btnGrabar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/Grabar.png"))); // NOI18N
         btnGrabar.setText("Grabar");
         btnGrabar.setToolTipText("Graba los datos proporcionados.");
         btnGrabar.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
@@ -146,7 +147,6 @@ public class ManteEvento extends javax.swing.JInternalFrame implements Serializa
         });
 
         btnBorrar.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        btnBorrar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/Borrar.png"))); // NOI18N
         btnBorrar.setText("Borrar");
         btnBorrar.setToolTipText("Borra los eventos seleccionados en la tabla.");
         btnBorrar.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
@@ -157,7 +157,6 @@ public class ManteEvento extends javax.swing.JInternalFrame implements Serializa
         });
 
         btnCancelar.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        btnCancelar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/Cancelar.png"))); // NOI18N
         btnCancelar.setText("Cancelar");
         btnCancelar.setToolTipText("Cancela la carga y desmarca los eventos a borrar.");
         btnCancelar.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
@@ -192,20 +191,16 @@ public class ManteEvento extends javax.swing.JInternalFrame implements Serializa
                             .addComponent(cbCiudad, 0, 265, Short.MAX_VALUE)
                             .addComponent(txtNombreEvento)
                             .addComponent(ddtFecDesde, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(ddtFecHasta, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnAddCiudad)))
+                            .addComponent(ddtFecHasta, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap(55, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(19, 19, 19)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(btnAddCiudad)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(cbCiudad, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(lblCiudad)))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(cbCiudad, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblCiudad))
                 .addGap(27, 27, 27)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtNombreEvento, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -225,7 +220,7 @@ public class ManteEvento extends javax.swing.JInternalFrame implements Serializa
                         .addComponent(ddtFecHasta, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 203, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 32, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(btnBorrar, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btnGrabar, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 38, Short.MAX_VALUE)
@@ -262,8 +257,10 @@ public class ManteEvento extends javax.swing.JInternalFrame implements Serializa
             listaEventos.add(evento);        
             grabarEnDocumento(ORIGINAL, evento, "GRABAR");
             mostrarDatosEnTabla();
-
-        }
+        } 
+        txtNombreEvento.setText("");
+        ddtFecDesde.setDate(null);
+        ddtFecHasta.setDate(null);
         
     }//GEN-LAST:event_btnGrabarActionPerformed
 
@@ -320,6 +317,12 @@ public class ManteEvento extends javax.swing.JInternalFrame implements Serializa
             JOptionPane.showMessageDialog(this, "No se seleccionó el evento a borrar", "Advertencia", JOptionPane.WARNING_MESSAGE);
         }
     }//GEN-LAST:event_btnBorrarActionPerformed
+
+    private void cbCiudadMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cbCiudadMouseClicked
+        cbCiudad.removeAllItems();
+        listaCiudades = leerDocCiudades(CIUDADES);
+        cargarComboCiudades();
+    }//GEN-LAST:event_cbCiudadMouseClicked
 
     /*
     Este metodo verifica que los campos antes de guardar no esten vacios
@@ -385,7 +388,7 @@ public class ManteEvento extends javax.swing.JInternalFrame implements Serializa
                         break;
                     }
                     else if( (desde.compareTo(e.getFechaDesde()) >= 0 && desde.compareTo(e.getFechaHasta())<= 0 ) //La fecha Desde esta entre el desde y el hasta  
-                             || (( hasta.compareTo(e.getFechaDesde())<=0 ) && hasta.compareTo(e.getFechaHasta())<= 0 ) //La fecha hasta esta entre el desde y el hasta
+                             || (( hasta.compareTo(e.getFechaDesde())>=0 ) && hasta.compareTo(e.getFechaHasta())<= 0 ) //La fecha hasta esta entre el desde y el hasta
                            ){ 
                            //Si llega aca es porque cargo un evento de mismo nombre, en la misma ciudad que el evento que encontro, y la fecha que puso esta entre el comienzo y fin del evento que compara:
                            //Registro 001, Investigacion, Asuncion, 01/05/2020, 05/05/2020
@@ -397,7 +400,7 @@ public class ManteEvento extends javax.swing.JInternalFrame implements Serializa
                 }
                 else{ //En otra ciudad
                     if( (desde.compareTo(e.getFechaDesde()) >= 0 && desde.compareTo(e.getFechaHasta())<= 0 ) //La fecha Desde esta entre el desde y el hasta  
-                     || (( hasta.compareTo(e.getFechaDesde())<=0 ) && hasta.compareTo(e.getFechaHasta())<= 0 ) //La fecha hasta esta entre el desde y el hasta
+                     || (( hasta.compareTo(e.getFechaDesde())>=0 ) && hasta.compareTo(e.getFechaHasta())<= 0 ) //La fecha hasta esta entre el desde y el hasta
                       ){
                         JOptionPane.showMessageDialog(this, "003 . No se puede cargar el evento. Un evento con el mismo nombre está ocurriendo en otra ciudad entre las fechas cargadas.", "Advertencia", JOptionPane.WARNING_MESSAGE);
                         error = true;
@@ -408,7 +411,7 @@ public class ManteEvento extends javax.swing.JInternalFrame implements Serializa
                 if (c.equalsIgnoreCase(e.getCiudad())){ //misma ciudad
                     //     desde >= desde                              desde <= Hasta
                     if( (desde.compareTo(e.getFechaDesde()) >= 0 && desde.compareTo(e.getFechaHasta())<= 0 ) //La fecha Desde esta entre el desde y el hasta  
-                             || (( hasta.compareTo(e.getFechaDesde())<=0 ) && hasta.compareTo(e.getFechaHasta())<= 0 ) //La fecha hasta esta entre el desde y el hasta
+                             || (( hasta.compareTo(e.getFechaDesde())>=0 ) && hasta.compareTo(e.getFechaHasta())<= 0 ) //La fecha hasta esta entre el desde y el hasta
                            ){ 
                            //Si llega aca es porque cargo un evento con otro nombre, en la misma ciudad que el evento que encontro, y la fecha que puso esta entre el comienzo y fin del evento que compara:
                            //Registro 001, Investigacion, Asuncion, 01/05/2020, 05/05/2020
@@ -422,6 +425,12 @@ public class ManteEvento extends javax.swing.JInternalFrame implements Serializa
             
         }            
         return error;
+    }
+    
+    private void cargarComboCiudades(){
+        for (Ciudad c : listaCiudades) {
+            cbCiudad.addItem(c.getCiudad());
+        }
     }
 
     private void mostrarDatosEnTabla(){
@@ -467,43 +476,47 @@ public class ManteEvento extends javax.swing.JInternalFrame implements Serializa
         Boolean exito;       
         int codEvento;
         
-        File auxiliar = new File("Auxiliar.csv");
-
-        if (auxiliar.exists()){
-            throw new java.io.IOException("existe");
-        }    
-
-        FileReader fr = new FileReader(original);
-        BufferedReader br = new BufferedReader(fr);
-
-        String linea = br.readLine();
-        if(motivo.equalsIgnoreCase("BAJA EVENTO")){
-            while(linea != null){
-                String[] split = linea.split(Pattern.quote("^"),6);
-                codEvento = Integer.decode(split[0]); 
-                if( codEvento == id ){
-                    evt = new Evento(codEvento, split[1], split[2], split[3], split[4] );
-                    grabarEnDocumento(auxiliar, evt, "BORRAR");
+            File auxiliar = new File("Auxiliar.csv");
+            
+            if (auxiliar.exists()){
+                throw new java.io.IOException("existe");
+            }    
+            
+            FileReader fr = new FileReader(original);
+            BufferedReader br = new BufferedReader(fr);
+            
+            String linea = br.readLine();
+            if(motivo.equalsIgnoreCase("BAJA EVENTO")){
+                while(linea != null){
+                    String[] split = linea.split(Pattern.quote("|"),7);
+                    codEvento = Integer.decode(split[0]); 
+                    if( codEvento == id ){
+                        evt = new Evento(codEvento, split[1], split[2], split[3], split[4] );
+                        grabarEnDocumento(auxiliar, evt, "BORRAR");
+                    }
+                    else{
+                         evt = new Evento(codEvento, split[1], split[2], split[3], split[4] );
+                        grabarEnDocumento(auxiliar, evt, "GRABAR");
+                    }                    
+                    linea = br.readLine();
                 }
-                else{
-                     evt = new Evento(codEvento, split[1], split[2], split[3], split[4] );
-                    grabarEnDocumento(auxiliar, evt, "GRABAR");
-                }                    
-                linea = br.readLine();
+                br.close();
+                exito = original.delete();
+                if(!exito){
+                     JOptionPane.showMessageDialog(this, "ERROR FATAL. No se pudo eliminar el archivo", "ERROR FATAL", JOptionPane.ERROR_MESSAGE);
+                }
+                exito = auxiliar.renameTo(original);
+                if (!exito){
+                    JOptionPane.showMessageDialog(this, "ERROR FATAL. No se pudo renombrar", "ERROR FATAL", JOptionPane.ERROR_MESSAGE);
+                }
+                
             }
-            br.close();
-            exito = original.delete();
-            if(!exito){
-                 JOptionPane.showMessageDialog(this, "ERROR FATAL. No se pudo eliminar el archivo", "ERROR FATAL", JOptionPane.ERROR_MESSAGE);
-            }
-            exito = auxiliar.renameTo(original);
-            if (!exito){
-                JOptionPane.showMessageDialog(this, "ERROR FATAL. No se pudo renombrar", "ERROR FATAL", JOptionPane.ERROR_MESSAGE);
-            }
-        }
+            
     }   
     
-
+    
+    
+    
     /*
     Traigo los datos previamente guardados en un archivo csv que tiene informacion de los eventos cargados sin sus ponencias
     */
@@ -519,9 +532,11 @@ public class ManteEvento extends javax.swing.JInternalFrame implements Serializa
                 BufferedReader br = new BufferedReader(fr);
                 String linea = br.readLine();
                 while(linea != null){
-                    String split[] = linea.split(Pattern.quote("^"),6);
+                    String split[] = linea.split(Pattern.quote("|"),7);
                     cod = Integer.decode(split[0]);
                     evt = new Evento(cod, split[1], split[2], split[3], split[4] );                    
+                    
+                    //Split[5] es la columna de Estado
                     if( split[5].equalsIgnoreCase("A")){
                         eventos.add(evt);
                     }
@@ -536,11 +551,46 @@ public class ManteEvento extends javax.swing.JInternalFrame implements Serializa
             }
         }catch(IOException e){
             JOptionPane.showMessageDialog(this, e.getMessage(),"Alerta", JOptionPane.ERROR_MESSAGE);
-            
+         
         }
         Collections.sort(eventos);    
         return eventos;
     }
+    
+    private ArrayList leerDocCiudades(File archivo){
+        ArrayList<Ciudad> ciudades = new ArrayList<>();
+        Ciudad c;
+        int cod;
+        try{            
+            if (archivo.exists()){
+                FileReader fr = new FileReader(archivo);
+                BufferedReader br = new BufferedReader(fr);
+                String linea = br.readLine();
+                while(linea != null){
+                    String split[] = linea.split(Pattern.quote("|"),3);
+                    cod = Integer.decode(split[0]);
+                    c = new Ciudad(cod, split[1]);                    
+                    if( split[2].equalsIgnoreCase("A")){
+                        ciudades.add(c);
+                    }               
+                    linea = br.readLine();
+                }
+                br.close();
+            }
+            else{
+                JOptionPane.showMessageDialog(this, "Se creará un archivo nuevo vacío.", "Alerta", JOptionPane.ERROR_MESSAGE);
+            }
+        }catch(IOException e){
+            JOptionPane.showMessageDialog(this, e.getMessage(),"Alerta", JOptionPane.ERROR_MESSAGE);
+            
+        }
+        Collections.sort(ciudades);    
+        return ciudades;
+    }
+    
+    
+    
+    
 /*
 Este metodo se usa cuando se va a dar de Alta un nuevo evento    
 */    
@@ -555,16 +605,16 @@ Este metodo se usa cuando se va a dar de Alta un nuevo evento
            if (accion.equalsIgnoreCase("GRABAR")){
              FileWriter fw = new FileWriter(archivo,true);
              PrintWriter pw = new PrintWriter(fw);
-             sb.append(evt.getCodigoEvento()).append("^").append(evt.getNombreEvento()).append("^");
-             sb.append(evt.getCiudad()).append("^").append(evt.getFechaDesde()).append("^").append(evt.getFechaHasta()).append("^").append("A").append("\n");
+             sb.append(evt.getCodigoEvento()).append("|").append(evt.getNombreEvento()).append("|");
+             sb.append(evt.getCiudad()).append("|").append(evt.getFechaDesde()).append("|").append(evt.getFechaHasta()).append("|").append("A").append("|").append(evt.getListaPonencias().size()).append("\n");
              pw.print(sb.toString());
              pw.close();
            }
            else if (accion.equalsIgnoreCase("BORRAR")){
              FileWriter fw = new FileWriter(archivo,true);
              PrintWriter pw = new PrintWriter(fw);
-             sb.append(evt.getCodigoEvento()).append("^").append(evt.getNombreEvento()).append("^");
-             sb.append(evt.getCiudad()).append("^").append(evt.getFechaDesde()).append("^").append(evt.getFechaHasta()).append("^").append("B").append("\n");
+             sb.append(evt.getCodigoEvento()).append("|").append(evt.getNombreEvento()).append("|");
+             sb.append(evt.getCiudad()).append("|").append(evt.getFechaDesde()).append("|").append(evt.getFechaHasta()).append("|").append("B").append("|").append(evt.getListaPonencias().size()).append("\n");
              pw.print(sb.toString());
              pw.close();
            }
@@ -577,7 +627,6 @@ Este metodo se usa cuando se va a dar de Alta un nuevo evento
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnAddCiudad;
     private javax.swing.JButton btnBorrar;
     private javax.swing.JButton btnCancelar;
     private javax.swing.JButton btnGrabar;

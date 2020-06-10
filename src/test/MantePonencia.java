@@ -81,7 +81,7 @@ public class MantePonencia extends javax.swing.JInternalFrame {
         txtNombreInvestigador.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
         txtDescripcionPonen.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        txtDescripcionPonen.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
+        txtDescripcionPonen.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         txtDescripcionPonen.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtDescripcionPonenActionPerformed(evt);
@@ -247,7 +247,7 @@ public class MantePonencia extends javax.swing.JInternalFrame {
             //sb.append(p.getCiudad()).append("^").append(evt.getFechaDesde()).append("^").append(evt.getFechaHasta()).append("^").append("A").append("\n");
             pw.print(sbp);
             pw.close();
-            JOptionPane.showMessageDialog(rootPane, "La ponencia ha sido guardada.");
+            JOptionPane.showMessageDialog(rootPane, "Ponencia Guardada");
             
         } catch(IOException ex){
            JOptionPane.showMessageDialog(this, ex.getMessage(),"Alerta", JOptionPane.ERROR_MESSAGE);

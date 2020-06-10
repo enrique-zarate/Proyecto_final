@@ -1,7 +1,7 @@
 package modelo;
 
+import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Date;
 
 /**
  *
@@ -13,14 +13,15 @@ public class Evento implements Comparable<Evento>{
     private String ciudad;
     private String fechaDesde;
     private String fechaHasta;
-    //private ArrayList<Ponencia> listaPonencias;
+    private ArrayList<Ponencia> listaPonencias;
     
     public Evento(int cod, String nombre, String c, String desde, String hasta){
         codigo_evento = cod;
         nombre_evento = nombre;
         ciudad = c;
         fechaDesde = desde;
-        fechaHasta = hasta;        
+        fechaHasta = hasta;
+        listaPonencias = new ArrayList<>();
     }
     
     //Setters
@@ -39,11 +40,12 @@ public class Evento implements Comparable<Evento>{
     public void setFechaHasta(String hasta){
         fechaHasta = hasta;
     }
-    /*
+    
     public void asignarPonencias(Ponencia p){
-        listaPonencias.add(p)
+        p.setEstado("U");
+        listaPonencias.add(p);
     }
-    */
+    
     //Getters
     public int getCodigoEvento(){
         return codigo_evento;
@@ -61,28 +63,22 @@ public class Evento implements Comparable<Evento>{
         return fechaHasta;
     }
     
-    /*public ArrayList getListaPonencias(){
+    public ArrayList getListaPonencias(){
         return listaPonencias;
     }
-    */  
+      
 
     @Override
     public String toString(){
-        StringBuilder str = new StringBuilder("\nDatos del Evento:");
-        str.append("\nID: ").append(codigo_evento);
-        str.append("\nNombre: ").append(nombre_evento);
-        str.append("\nCiudad: ").append(ciudad);
-        str.append("\nInicio: ").append(fechaDesde);
-        str.append("\nFin: ").append(fechaHasta);
-        /*
-        Agregar las ponencias aqui
-        */
+        StringBuilder str = new StringBuilder();
+        str.append(nombre_evento).append(" - ").append(ciudad).append(" - ").append(fechaDesde).append(" - ").append(fechaHasta);
         return str.toString();
     }
     
     @Override
     public int compareTo(Evento e){
         return Comparator.comparingInt(Evento::getCodigoEvento)
+                .thenComparing(Evento::getFechaDesde)
                 .thenComparing(Evento::getNombreEvento)
                 .thenComparing(Evento::getCiudad)
                 .compare(this,e);
