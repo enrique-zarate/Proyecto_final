@@ -247,7 +247,7 @@ public class MantePonencia extends javax.swing.JInternalFrame {
             //sb.append(p.getCiudad()).append("^").append(evt.getFechaDesde()).append("^").append(evt.getFechaHasta()).append("^").append("A").append("\n");
             pw.print(sbp);
             pw.close();
-            JOptionPane.showMessageDialog(rootPane, "Ponencia guardada!");
+            JOptionPane.showMessageDialog(rootPane, "La ponencia ha sido guardada.");
             
         } catch(IOException ex){
            JOptionPane.showMessageDialog(this, ex.getMessage(),"Alerta", JOptionPane.ERROR_MESSAGE);
